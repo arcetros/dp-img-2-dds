@@ -8,7 +8,10 @@
         "npm": ">=7.0.0"
     },
     "scripts": {
+        "clean": "rimraf build",
         "dev": "ts-node .",
+        "build": "npm run clean && tsc -p tsconfig.release.json",
+        "build:watch": "tsc -w -p tsconfig.release.json",
         "lint": "eslint src/**/*.ts",
         "format": "eslint src/**/*.ts --fix"
     },
@@ -39,5 +42,8 @@
         "trailingComma": "none",
         "arrowParens": "avoid",
         "printWidth": 120
+    },
+    "dependencies": {
+        "rimraf": "^4.1.2"
     }
 }
