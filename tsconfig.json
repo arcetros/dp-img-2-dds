@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "commonjs",
+        "module": "CommonJS",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "allowJs": true,
@@ -16,7 +16,8 @@
         "noUnusedParameters": true,
         "noImplicitAny": false,
         "noImplicitThis": false,
-        "strictNullChecks": false
+        "strictNullChecks": false,
+        "strict": true
     },
     "include": ["src/**/*"]
 }
