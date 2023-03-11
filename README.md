@@ -1,8 +1,4 @@
-> Source code for [dp-track-time](https://github.com/arcetros/dp-track-time).
-
-## Acknowledgements
-
--mta-discord-rpc(https://github.com/pkfln/mta-discord-rpc).
+> Source code for [dp-img-2-dds](https://github.com/arcetros/dp-img-2-dds).
 
 ## License
 
