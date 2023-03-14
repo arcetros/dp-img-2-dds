@@ -1,7 +1,10 @@
 import { Image } from "image-js";
 import { execa } from "execa";
-import { mkdirSync, existsSync, unlinkSync } from "fs-extra";
+import chalk from "chalk";
+import ora from "ora";
+import fs from "fs-extra";
 import * as path from "path";
+import { toSecond } from "./string-utils";
 
 const SUPPORTED_FORMATS = [".jpg", ".jpeg", ".png"];
 
@@ -21,31 +24,35 @@ class ImageConverter {
         const inputImage = await Image.load(inputFilePath);
         await inputImage.save(tempFilePath);
         const outputDirPath = path.dirname(outputFilePath);
-        if (!existsSync(outputDirPath)) {
-            mkdirSync(outputDirPath, { recursive: true });
+        if (!fs.existsSync(outputDirPath)) {
+            fs.mkdirSync(outputDirPath, { recursive: true });
         }
         const args = ["-y", "-f", "DXT5", "-nologo", "-m", "1", "-o", outputDirPath, tempFilePath];
         await execa(this.texconvPath, args);
         // Delete temporary file
-        unlinkSync(tempFilePath);
+        fs.unlinkSync(tempFilePath);
     }
 
     public async convertImageFile(inputFile: string): Promise<void> {
         const extension = path.extname(inputFile);
+        const start = process.hrtime();
+        const spinner = ora(`${chalk.yellowBright(`${inputFile}`)}`).start();
 
         if (!SUPPORTED_FORMATS.includes(extension)) {
-            console.error(`Unsupported file format: ${inputFile}`);
+            spinner.fail(`Error: ${inputFile} has an unsupported format (${extension}).`);
             return;
         }
 
         const inputFilePath = path.join(this.inputFolderPath, inputFile);
         const outputFilePath = path.join(this.outputFolderPath, `${path.parse(inputFile).name}.dds`);
-        console.log(`Converting ${inputFilePath} to ${outputFilePath}`);
 
         try {
-            await this.convertImage(inputFilePath, outputFilePath);
+            await this.convertImage(inputFilePath, outputFilePath).then(() => {
+                const end = `${toSecond(process.hrtime(start))} seconds`;
+                spinner.succeed(`Converting ${inputFile} done in ${chalk.greenBright(end)}`);
+            });
         } catch (err) {
-            console.error(`Failed to convert ${inputFilePath}: ${err}`);
+            chalk.red(err);
         }
     }
 

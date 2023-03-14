@@ -1,5 +1,5 @@
 import * as path from "path";
-import { access } from "fs-extra";
+import fs from "fs-extra";
 import { execa, ExecaReturnValue } from "execa";
 import * as R from "ramda";
 
@@ -18,7 +18,7 @@ const determineMTAPath = R.once(async (): Promise<string> => {
     const trimmed_path: string = response.stdout.substring(1, response.stdout.length - 2);
     const win_32_path: string = path.win32.dirname(trimmed_path);
     try {
-        await access(path.win32.join(win_32_path, MTA_APP_NAME));
+        await fs.access(path.win32.join(win_32_path, MTA_APP_NAME));
     } catch {
         throw Error("Could not find MTA installation path (2)");
     }

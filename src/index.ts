@@ -1,5 +1,5 @@
 import { getMtaPath } from "./mta-installation";
-import { readdirSync, ensureDirSync } from "fs-extra";
+import fs from "fs-extra";
 import * as path from "path";
 import ImageConverter from "./image-converter";
 
@@ -9,10 +9,10 @@ const TEXCONV_PATH = path.join(process.cwd(), "texconv.exe");
 const converter = new ImageConverter(FOLDER_PATH, FOLDER_PATH_OUTPUT, TEXCONV_PATH);
 
 (async function (): Promise<void> {
-    const inputFiles = readdirSync(FOLDER_PATH);
+    const inputFiles = fs.readdirSync(FOLDER_PATH);
     try {
         await getMtaPath();
-        ensureDirSync(FOLDER_PATH_OUTPUT);
+        fs.ensureDirSync(FOLDER_PATH_OUTPUT);
         converter.convertImageFiles(inputFiles);
     } catch (err) {
         console.error(err);
