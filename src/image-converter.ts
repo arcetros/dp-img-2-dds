@@ -20,7 +20,7 @@ class ImageConverter {
     }
 
     private async convertImage(inputFilePath: string, outputFilePath: string): Promise<void> {
-        const tempFilePath = path.join(path.dirname(outputFilePath), `${path.parse(inputFilePath).name}.tmp.png`);
+        const tempFilePath = path.join(path.dirname(outputFilePath), `${path.parse(inputFilePath).name}.png`);
         const inputImage = await Image.load(inputFilePath);
         await inputImage.save(tempFilePath);
         const outputDirPath = path.dirname(outputFilePath);
