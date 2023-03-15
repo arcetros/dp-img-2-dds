@@ -20,7 +20,7 @@ class ImageConverter {
     }
 
     private async convertImage(inputFilePath: string, outputFilePath: string): Promise<void> {
-        const tempFilePath = path.join(path.dirname(outputFilePath), `${path.parse(inputFilePath).name}.tmp.png`);
+        const tempFilePath = path.join(path.dirname(outputFilePath), `${path.parse(inputFilePath).name}.png`);
         const inputImage = await Image.load(inputFilePath);
         await inputImage.save(tempFilePath);
         const outputDirPath = path.dirname(outputFilePath);
@@ -39,7 +39,11 @@ class ImageConverter {
         const spinner = ora(`${chalk.yellowBright(`${inputFile}`)}`).start();
 
         if (!SUPPORTED_FORMATS.includes(extension)) {
-            spinner.fail(`Error: ${inputFile} has an unsupported format (${extension}).`);
+            spinner.fail(
+                `${chalk.bgRedBright(chalk.black(" FAILED "))} ${chalk.white(inputFile)} ${chalk.gray(
+                    `has an unsupported format (${extension})`
+                )}`
+            );
             return;
         }
 
@@ -49,7 +53,11 @@ class ImageConverter {
         try {
             await this.convertImage(inputFilePath, outputFilePath).then(() => {
                 const end = `${toSecond(process.hrtime(start))} seconds`;
-                spinner.succeed(`Converting ${inputFile} done in ${chalk.greenBright(end)}`);
+                spinner.succeed(
+                    `${chalk.bgGreenBright(chalk.black(" SUCCEEDED "))} ${chalk.white(inputFile)} ${chalk.gray(
+                        `(${end})`
+                    )}`
+                );
             });
         } catch (err) {
             chalk.red(err);
