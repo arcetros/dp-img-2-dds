@@ -4,13 +4,15 @@ import inquirer, { QuestionCollection } from "inquirer";
 import { clear } from "console";
 import chalk from "chalk";
 import figlet from "figlet";
+import { getDocumentsFolder } from "platform-folders";
 import { getMtaPath } from "./mta-installation";
 import ImageConverter from "./image-converter";
 import ora from "ora";
 import { toSecond } from "./string-utils";
 
-const FOLDER_PATH = path.join(process.cwd(), "images");
-const FOLDER_PATH_OUTPUT = path.join(process.cwd(), "images_output");
+const MAIN_FOLDER_PATH = path.join(`${getDocumentsFolder()}/dp-img-2-dds`);
+const FOLDER_PATH = path.join(MAIN_FOLDER_PATH, "/images");
+const FOLDER_PATH_OUTPUT = path.join(MAIN_FOLDER_PATH, "/images_output");
 const TEXCONV_PATH = path.join(process.cwd(), "texconv.exe");
 const DP_STICKER_PATH = "mods/deathmatch/resources/stickers/original/dds/256/patterns";
 
@@ -45,6 +47,11 @@ async function exit() {
 }
 
 async function main(): Promise<void> {
+    // Make sure to check if the folder is exist or not, if not create them.
+    fs.ensureDirSync(MAIN_FOLDER_PATH);
+    fs.ensureDirSync(FOLDER_PATH);
+    fs.ensureDirSync(FOLDER_PATH_OUTPUT);
+
     const mtaPath = await getMtaPath();
     const originalStickerPath = path.join(mtaPath, DP_STICKER_PATH);
     const dirents = fs.readdirSync(FOLDER_PATH, { withFileTypes: true });
@@ -55,9 +62,8 @@ async function main(): Promise<void> {
         .filter(dirent => dirent.isFile() && dirent.name !== ".gitignore")
         .map(dirent => dirent.name);
     try {
-        // Search for mta installation path, required to continue the program.
-        fs.ensureDirSync(FOLDER_PATH_OUTPUT);
         clear();
+        console.log(getDocumentsFolder());
         console.log(`${chalk.greenBright(figlet.textSync("dp-img-2-dds", { horizontalLayout: "full" }))}\n`);
         console.log(chalk.gray("https://github.com/arcetros/dp-img-2-dds"));
         console.log(`You are now using v${process.env.npm_package_version}\n`);
