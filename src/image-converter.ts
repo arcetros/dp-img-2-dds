@@ -4,7 +4,7 @@ import chalk from "chalk";
 import ora from "ora";
 import fs from "fs-extra";
 import * as path from "path";
-import { toSecond } from "./string-utils";
+import { toSecond } from "./string-utils.js";
 
 const SUPPORTED_FORMATS = [".jpg", ".jpeg", ".png"];
 

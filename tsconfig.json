@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "ES2020",
         "module": "ESNext",
+        "outDir": "/build",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "allowJs": true,
@@ -17,7 +18,8 @@
         "noImplicitAny": false,
         "noImplicitThis": false,
         "strictNullChecks": false,
-        "strict": true
+        "strict": true,
+        "esModuleInterop": true
     },
     "include": ["src/**/*"],
     "ts-node": {

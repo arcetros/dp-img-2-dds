@@ -5,10 +5,10 @@ import { clear } from "console";
 import chalk from "chalk";
 import figlet from "figlet";
 import { getDocumentsFolder } from "platform-folders";
-import { getMtaPath } from "./mta-installation";
-import ImageConverter from "./image-converter";
+import { getMtaPath } from "./mta-installation.js";
+import ImageConverter from "./image-converter.js";
 import ora from "ora";
-import { toSecond } from "./string-utils";
+import { toSecond } from "./string-utils.js";
 
 const MAIN_FOLDER_PATH = path.join(`${getDocumentsFolder()}/dp-img-2-dds`);
 const FOLDER_PATH = path.join(MAIN_FOLDER_PATH, "/images");
