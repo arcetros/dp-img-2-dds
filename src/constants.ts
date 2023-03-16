@@ -7,7 +7,8 @@ export const CONVERT_OPTIONS: QuestionCollection = [
         type: "list",
         choices: [
             { type: "choice", value: 0, name: "Convert by selections" },
-            { type: "choice", value: 1, name: "Convert all images" }
+            { type: "choice", value: 1, name: "Convert all images" },
+            { type: "choice", value: 2, name: "Replace sticker" }
         ]
     }
 ];
