@@ -1,19 +1,35 @@
 import fs from "fs-extra";
 import * as path from "path";
-import inquirer from "inquirer";
+import inquirer, { QuestionCollection } from "inquirer";
 import { clear } from "console";
 import chalk from "chalk";
 import figlet from "figlet";
 import { getMtaPath } from "./mta-installation";
 import ImageConverter from "./image-converter";
-import { CONVERT_OPTIONS } from "./constants";
+import ora from "ora";
+import { toSecond } from "./string-utils";
 
 const FOLDER_PATH = path.join(process.cwd(), "images");
 const FOLDER_PATH_OUTPUT = path.join(process.cwd(), "images_output");
 const TEXCONV_PATH = path.join(process.cwd(), "texconv.exe");
+const DP_STICKER_PATH = "mods/deathmatch/resources/stickers/original/dds/256/patterns";
+
 const converter = new ImageConverter(FOLDER_PATH, FOLDER_PATH_OUTPUT, TEXCONV_PATH);
 
 main();
+
+const CONVERT_OPTIONS: QuestionCollection = [
+    {
+        name: "convert_options",
+        message: "Select image tools (use arrows key)",
+        type: "list",
+        choices: [
+            { type: "choice", value: 0, name: "Select images to convert to .dds format" },
+            { type: "choice", value: 1, name: "Convert all images at once inside image_output folder" },
+            { type: "choice", value: 2, name: "Replace original sticker with new ones" }
+        ]
+    }
+];
 
 async function exit() {
     const { moreQuery } = await inquirer.prompt([
@@ -30,7 +46,7 @@ async function exit() {
 
 async function main(): Promise<void> {
     const mtaPath = await getMtaPath();
-    const originalStickerPath = path.join(mtaPath, "mods/deathmatch/resources/stickers/original/dds/256/patterns");
+    const originalStickerPath = path.join(mtaPath, DP_STICKER_PATH);
     const dirents = fs.readdirSync(FOLDER_PATH, { withFileTypes: true });
     const stickerDirents = fs.readdirSync(originalStickerPath, { withFileTypes: true }).map(dirent => dirent.name);
     const outputDirents = fs.readdirSync(FOLDER_PATH_OUTPUT, { withFileTypes: true });
@@ -42,8 +58,10 @@ async function main(): Promise<void> {
         // Search for mta installation path, required to continue the program.
         fs.ensureDirSync(FOLDER_PATH_OUTPUT);
         clear();
-        console.log(chalk.greenBright(figlet.textSync("dp-img-2-dds", { horizontalLayout: "full" })));
-        console.log("");
+        console.log(`${chalk.greenBright(figlet.textSync("dp-img-2-dds", { horizontalLayout: "full" }))}\n`);
+        console.log(chalk.gray("https://github.com/arcetros/dp-img-2-dds"));
+        console.log(`You are now using v${process.env.npm_package_version}\n`);
+
         const { convert_options } = await inquirer.prompt(CONVERT_OPTIONS);
         switch (convert_options) {
             case 0:
@@ -69,7 +87,7 @@ async function main(): Promise<void> {
                     {
                         type: "checkbox",
                         name: "select_options",
-                        message: "Select your converted image",
+                        message: "Select your converted image (.dds) format only!",
                         choices: targetDDSChoices,
                         validate: targetDDS => {
                             if (targetDDS.length < 1) {
@@ -80,13 +98,11 @@ async function main(): Promise<void> {
                     }
                 ]);
 
-                console.log("You have selected: ", select_options);
-
                 const { replace_options } = await inquirer.prompt([
                     {
                         type: "checkbox",
                         name: "replace_options",
-                        message: `Select which original sticker you want to replace`,
+                        message: `Select which original stickers you want to replace`,
                         choices: stickerDirents,
                         validate: selectedStickers => {
                             if (selectedStickers.length !== select_options.length) {
@@ -98,12 +114,15 @@ async function main(): Promise<void> {
                         }
                     }
                 ]);
-                const filesToCopy = select_options.map((option, i) => ({
+
+                const filesToCopy = select_options.map((option: string, i: number) => ({
                     sourcePath: `${FOLDER_PATH_OUTPUT}/${option}`,
                     targetPath: `${originalStickerPath}/${replace_options[i]}`
                 }));
 
                 for (const file of filesToCopy) {
+                    const start = process.hrtime();
+                    const spinner = ora(`${chalk.yellowBright(`${file.sourcePath}`)}`).start();
                     try {
                         await fs.promises.unlink(file.targetPath);
                     } catch (error) {
@@ -111,12 +130,21 @@ async function main(): Promise<void> {
                     }
 
                     try {
-                        await fs.promises.copyFile(file.sourcePath, file.targetPath);
-                        console.log(`File ${file.sourcePath} successfully copied and renamed to ${file.targetPath}.`);
+                        await fs.promises.copyFile(file.sourcePath, file.targetPath).then(() => {
+                            const end = `${toSecond(process.hrtime(start))} seconds`;
+                            spinner.succeed(
+                                `${chalk.bgGreenBright(chalk.black(" SUCCEEDED "))} ${chalk.white(
+                                    `${path.basename(file.sourcePath)} to ${path.basename(file.targetPath)}`
+                                )} ${chalk.gray(`(${end})`)}`
+                            );
+                        });
                     } catch (error) {
-                        console.log(`Error copying file from ${file.sourcePath} to ${file.targetPath}: ${error}`);
+                        console.log(
+                            chalk.red(`Error copying file from ${file.sourcePath} to ${file.targetPath}: ${error}`)
+                        );
                     }
                 }
+                await exit();
                 break;
             default:
                 throw new Error(`Invalid option selected: ${convert_options}. Please select a valid option`);

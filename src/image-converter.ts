@@ -60,7 +60,7 @@ class ImageConverter {
                 );
             });
         } catch (err) {
-            chalk.red(err);
+            console.log(chalk.red(err));
         }
     }
 
