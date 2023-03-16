@@ -6,7 +6,7 @@ export const CONVERT_OPTIONS: QuestionCollection = [
         message: "Select image conversion options (use arrows key)",
         type: "list",
         choices: [
-            { type: "choice", value: 0, name: "Single image convert" },
+            { type: "choice", value: 0, name: "Convert by selections" },
             { type: "choice", value: 1, name: "Convert all images" }
         ]
     }

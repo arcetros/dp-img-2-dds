@@ -47,8 +47,16 @@ async function main(): Promise<void> {
         inquirer.prompt(CONVERT_OPTIONS).then(({ convert_options }) => {
             switch (convert_options) {
                 case 0:
-                    // TODO: Add selections later
-                    console.log("Single convert");
+                    inquirer
+                        .prompt([
+                            {
+                                type: "checkbox",
+                                message: `Select up to ${inputFiles.length} files`,
+                                name: "options",
+                                choices: inputFiles
+                            }
+                        ])
+                        .then(({ options }) => converter.convertImageFiles(options).then(() => exit()));
                     break;
                 case 1:
                     converter.convertImageFiles(inputFiles).then(() => exit());
