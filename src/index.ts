@@ -63,7 +63,6 @@ async function main(): Promise<void> {
         .map(dirent => dirent.name);
     try {
         clear();
-        console.log(getDocumentsFolder());
         console.log(`${chalk.greenBright(figlet.textSync("dp-img-2-dds", { horizontalLayout: "full" }))}\n`);
         console.log(chalk.gray("https://github.com/arcetros/dp-img-2-dds"));
         console.log(`You are now using v${process.env.npm_package_version}\n`);
@@ -158,4 +157,8 @@ async function main(): Promise<void> {
     } catch (err) {
         console.error(err);
     }
+}
+
+while (true) {
+    await new Promise(resolve => setTimeout(resolve, 100));
 }

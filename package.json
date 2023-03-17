@@ -13,6 +13,7 @@
         "clean": "rimraf build",
         "dev": "ts-node-esm src/index.ts",
         "build": "npm run clean && tsc -p tsconfig.release.json",
+        "release": "node release.cjs",
         "build:watch": "tsc -w -p tsconfig.release.json",
         "start": "node ./build/src/index.js",
         "lint": "eslint src/**/*.ts",
