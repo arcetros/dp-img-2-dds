@@ -73,7 +73,7 @@
         "fs-extra": "^11.1.0",
         "image-js": "^0.35.3",
         "inquirer": "^9.1.4",
-        "ora": "^6.1.2",
+        "ora": "^6.3.0",
         "platform-folders": "^0.6.0",
         "ramda": "^0.28.0",
         "rcedit": "^3.0.1",
