@@ -9,6 +9,8 @@ import { getMtaPath } from "./mta-installation.js";
 import ImageConverter from "./image-converter.js";
 import ora from "ora";
 import { toSecond } from "./string-utils.js";
+import { spawn } from "child_process";
+import { platform } from "os";
 
 const MAIN_FOLDER_PATH = path.join(`${getDocumentsFolder()}/dp-img-2-dds`);
 const FOLDER_PATH = path.join(MAIN_FOLDER_PATH, "/images");
@@ -28,7 +30,8 @@ const CONVERT_OPTIONS: QuestionCollection = [
         choices: [
             { type: "choice", value: 0, name: "Select images to convert to .dds format" },
             { type: "choice", value: 1, name: "Convert all images at once inside image_output folder" },
-            { type: "choice", value: 2, name: "Replace original sticker with new ones" }
+            { type: "choice", value: 2, name: "Replace original sticker with new ones" },
+            { type: "choice", value: 3, name: "Open file directory" }
         ]
     }
 ];
@@ -43,6 +46,8 @@ async function exit() {
     ]);
     if (moreQuery) {
         await main();
+    } else {
+        process.exit();
     }
 }
 
@@ -149,6 +154,21 @@ async function main(): Promise<void> {
                         );
                     }
                 }
+                await exit();
+                break;
+            case 3:
+                let explorer: string;
+                switch (platform()) {
+                    case "win32":
+                        explorer = "explorer";
+                        break;
+                    case "linux":
+                        explorer = "xdg-open";
+                        break;
+                    default:
+                        throw new Error("This OS is currently not supported");
+                }
+                spawn(explorer, [MAIN_FOLDER_PATH], { detached: true }).unref();
                 await exit();
                 break;
             default:
