@@ -1,6 +1,6 @@
 {
     "name": "dp-img-2-dds",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Convert any image extension to .dds format for Drift Paradise stickers",
     "main": "build/src/index.js",
     "bin": "build/src/index.js",
